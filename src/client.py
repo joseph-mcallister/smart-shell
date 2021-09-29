@@ -72,7 +72,12 @@ def split_command(str):
     arr.append(last_seq)
     return arr
 
-if __name__ == "__main__":
+def main():
+    if len(sys.argv) == 1:
+        print("No arguments provided. See below for sample commands")
+        print("> smart-shell setup")
+        print('> smart-shell "What is my current directory"')
+        return
     arg = sys.argv[1] if len(sys.argv) > 0 else None
     config_data = get_config_data(arg == "setup")
     if arg != "setup":
@@ -110,3 +115,6 @@ if __name__ == "__main__":
 
         else:
             print("Error fetching command from API")
+
+if __name__ == "__main__":
+    main()
