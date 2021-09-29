@@ -57,7 +57,7 @@ def split_command(str):
     arr = []
     last_seq = ""
     is_single_quote_delim = is_double_quote_delim = False
-    for char in command.strip():
+    for char in str.strip():
         if char == ' ' and not is_single_quote_delim and not is_double_quote_delim:
             arr.append(last_seq)
             last_seq = ""
