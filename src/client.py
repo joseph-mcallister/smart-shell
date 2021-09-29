@@ -11,7 +11,7 @@ from subprocess import check_output
 
 home = os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")
 logs_path = "{0}/.config/smart_shell_context.json".format(home)
-base_api_url = os.environ.get("API_URL") or "https://smart-shell-function-app.azurewebsites.net/api"
+base_api_url = "https://smart-shell.p.rapidapi.com"
 
 def get_config_data(is_setup_mode):
     config_path = "{0}/.config/smart_shell.json".format(home)
@@ -86,7 +86,7 @@ if __name__ == "__main__":
             },
             headers={
                 "Content-Type": "application/json",
-                "X-RapidAPI-Proxy-Secret": config_data["api_key"]
+                "X-RapidApi-Key": config_data["api_key"]
             }
         )
         

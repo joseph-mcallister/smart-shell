@@ -4,4 +4,4 @@
 `python3 ai.py "Print files in current directory"`
 
 ## Building bundle
-`pyinstaller --onefile --distpath ../downloads/latest ai.py --name smart-shell client.py`
+`pyinstaller --onefile --distpath ../downloads/latest --name smart-shell client.py`
