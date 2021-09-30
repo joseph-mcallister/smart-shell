@@ -5,3 +5,5 @@
 
 ## Building bundle
 `pyinstaller --onefile --distpath ../downloads/latest --name smart-shell client.py`
+`codesign --remove-signature smart-shell`
+`codesign -s <cert-name> smart-shell`
