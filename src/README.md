@@ -5,3 +5,8 @@
 
 ## Building bundle
 `pyinstaller --onefile --distpath ../downloads/latest --name smart-shell client.py`
+
+## TODO
+- Show good error if no internet connect
+- Run `which <first-command>` and prompt to download if not available
+- Add anonymized telemetry for successful commands
