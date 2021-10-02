@@ -14,7 +14,7 @@ smart-shell is currently bundled as an executable that can be downloaded and run
 ## Getting an API key
 smart-shell is currently in a private beta as the language model is fine-tuned on a growing dataset and the client is improved. To request access, please create a GitHub issue. 
 
-Beta access is provisioned through RapidAPI. If you already have been granted access to the private plan API, search smart-shell on [RapidAPI](https://rapidapi.com/hub) and join the private plan. Copy your `x-rapidapi-key` (this can be seen under the sample in endpoints) and provide it once the executable is installed. 
+Beta access is provisioned through RapidAPI. If you already have been granted access to the private plan API, search "smart shell" on [RapidAPI](https://rapidapi.com/hub) and join the private plan. Copy your `x-rapidapi-key` (this can be seen under the sample in endpoints) and provide it once the executable is installed. 
 
 ## Setup
 After an API key has been provisioned and the download is ready, run:
