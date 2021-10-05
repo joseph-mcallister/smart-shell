@@ -6,12 +6,16 @@ import json
 from requests.api import options
 import subprocess
 import time
-import csv
 from subprocess import check_output
+import logging 
 
 home = os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")
 logs_path = "{0}/.config/smart_shell_context.json".format(home)
 base_api_url = "https://smart-shell.p.rapidapi.com"
+
+def get_os():
+    # TODO: dynamically detect OS
+    return "mac"
 
 def get_config_data(is_setup_mode):
     config_path = "{0}/.config/smart_shell.json".format(home)
@@ -72,6 +76,55 @@ def split_command(str):
     arr.append(last_seq)
     return arr
 
+
+## Return True if command is found 
+def command_exists(command):
+    which_check = "which {0}".format(command)
+    try:    
+        subprocess.check_output(which_check, shell=True)
+        return True
+    except:
+        return False
+
+def post_command(prompt):
+    config_data = get_config_data(prompt == "setup")
+    context_data = get_context()
+    context_data = get_context_data_without_prompt(context_data, prompt)
+    r = requests.post("{0}/Command".format(base_api_url), 
+        json={
+            "prompt": prompt, 
+            "tags": ["mac","python"],
+            "context": context_data["context"] 
+        },
+        headers={
+            "Content-Type": "application/json",
+            "X-RapidApi-Key": config_data["api_key"]
+        }
+    )
+    if r.status_code >= 200 and r.status_code < 300:
+        return r
+    elif r.status_code == 401:
+        print("API key not valid.")
+        get_config_data(True)
+    else:
+        print("Error fetching command from API")
+    return None
+
+def post_telemetry(prompt, command):
+    config_data = get_config_data(False)
+    r = requests.post("{0}/Telemetry".format(base_api_url), 
+        json={
+            "prompt": prompt, 
+            "command": command,
+            "os": get_os()
+        },
+        headers={
+            "Content-Type": "application/json",
+            "X-RapidApi-Key": config_data["api_key"]
+        }
+    )
+    return r.status_code >= 200 and r.status_code < 300
+
 def main():
     if len(sys.argv) == 1:
         print("No arguments provided. See below for sample commands")
@@ -79,33 +132,26 @@ def main():
         print('> smart-shell "What is my current directory"')
         return
     arg = sys.argv[1] if len(sys.argv) > 0 else None
-    config_data = get_config_data(arg == "setup")
     if arg != "setup":
-        context_data = get_context()
-        context_data = get_context_data_without_prompt(context_data, arg)
-        r = requests.post("{0}/Command".format(base_api_url), 
-            json={
-                "prompt": arg, 
-                "tags": ["mac","python"],
-                "context": context_data["context"] 
-            },
-            headers={
-                "Content-Type": "application/json",
-                "X-RapidApi-Key": config_data["api_key"]
-            }
-        )
-        
+        r = post_command(arg)
+
         if r.status_code >= 200 and r.status_code < 300:   
             response = r.json()
             command = response["choices"][0]["text"].strip()
+            first_command = command.split(" ")[0]
             print("Suggested command: '{0}'".format(command))
+            # TODO: prompt to install if command not found !command_exists
             if input("Run command above? (y/n): ") in ["Y", "y"]:
-                command_arr = split_command(command)
                 try:
                     output = subprocess.check_output(command, shell=True)
                     if output is not None and output != "":
                         print(output.decode("utf-8"), end='')
-                    write_context(arg, command)
+                    try:
+                        write_context(arg, command)
+                        post_telemetry(arg, command)
+                    except:
+                        ## TODO: update to only log if dev environment
+                        logging.exception('')
                 except:
                     print("Oops, looks like we still have some work to do!")
 
