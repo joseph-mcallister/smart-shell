@@ -112,18 +112,21 @@ def post_command(prompt):
 
 def post_telemetry(prompt, command):
     config_data = get_config_data(False)
-    r = requests.post("{0}/Telemetry".format(base_api_url), 
-        json={
-            "prompt": prompt, 
-            "command": command,
-            "os": get_os()
-        },
-        headers={
-            "Content-Type": "application/json",
-            "X-RapidApi-Key": config_data["api_key"]
-        }
-    )
-    return r.status_code >= 200 and r.status_code < 300
+    try:
+        requests.post("{0}/Telemetry".format(base_api_url), 
+            json={
+                "prompt": prompt, 
+                "command": command,
+                "os": get_os()
+            },
+            headers={
+                "Content-Type": "application/json",
+                "X-RapidApi-Key": config_data["api_key"]
+            },
+            timeout=0.1 # hack to avoid blocking script
+        )
+    except requests.exceptions.ReadTimeout:
+        pass
 
 def main():
     if len(sys.argv) == 1:
@@ -146,12 +149,12 @@ def main():
                     output = subprocess.check_output(command, shell=True)
                     if output is not None and output != "":
                         print(output.decode("utf-8"), end='')
-                    try:
-                        write_context(arg, command)
-                        post_telemetry(arg, command)
-                    except:
-                        ## TODO: update to only log if dev environment
-                        logging.exception('')
+                        try:
+                            write_context(arg, command)
+                            post_telemetry(arg, command) 
+                        except:
+                            ## TODO: update to only log if dev environment
+                            logging.exception('')
                 except:
                     print("Oops, looks like we still have some work to do!")
 

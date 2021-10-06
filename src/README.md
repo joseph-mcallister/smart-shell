@@ -1,12 +1,17 @@
-## Setup + Example
-`pip install -r requirements.txt`
-`python3 ai.py setup`
-`python3 ai.py "Print files in current directory"`
+# smart-shell
+State of the art AI available right inside of the terminal.
 
-## Building bundle
-`pyinstaller --onefile --distpath ../downloads/latest --name smart-shell client.py`
+## Examples, Setup, and Detailed Instructions
+[GitHub repository](https://github.com/joseph-mcallister/smart-shell)
 
-## TODO
-- Show good error if no internet connect
-- Run `which <first-command>` and prompt to download if not available
-- Add anonymized telemetry for successful commands
+## Compatibility
+Smart shell is available for all machines with Python3.4+ and pip installed. It currently works best on Linux and Unix machines.
+
+## Requirements
+- python (3.4+)
+- pip
+- python-dev
+
+## Installation
+- `pip3 install smart-shell`
+
