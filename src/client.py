@@ -8,6 +8,7 @@ import subprocess
 import time
 from subprocess import check_output
 import logging 
+from psutil import Process
 
 home = os.environ.get("XDG_CONFIG_HOME") or os.environ.get("HOME")
 logs_path = "{0}/.config/smart_shell_context.json".format(home)
@@ -128,14 +129,52 @@ def post_telemetry(prompt, command):
     except requests.exceptions.ReadTimeout:
         pass
 
+def get_shell_from_proc():
+    proc = Process(os.getpid())
+    while proc is not None and proc.pid > 0:
+        try:
+            name = proc.name()
+        except TypeError:
+            name = proc.name
+
+        name = os.path.splitext(name)[0]
+        if "zsh" in name:
+            return "zsh"
+        elif "bash" in name:
+            return "bash"
+
+        try:
+            proc = proc.parent()
+        except TypeError:
+            proc = proc.parent
+
+def get_history_file_name(shell):
+    if shell == "zsh":
+        return os.path.expanduser('~/.zsh_history')
+    elif shell == "bash":
+        return os.environ.get(os.path.expanduser('~/.bash_history'))
+
 def main():
     if len(sys.argv) == 1:
         print("No arguments provided. See below for sample commands")
-        print("> smart-shell setup")
-        print('> smart-shell "What is my current directory"')
+        print("> plz setup")
+        print('> plz "Tell me my curent directory"')
         return
     arg = sys.argv[1] if len(sys.argv) > 0 else None
-    if arg != "setup":
+    get_config_data(arg == "setup")
+    if arg == "fix":
+        shell = get_shell_from_proc()
+        last_command = None
+        if shell:
+            with open(get_history_file_name(shell)) as f:
+                print(f)
+                last_command = f.readlines() [-2:]
+            print(last_command)
+
+        else:
+            print("Shell not supported. Currently only zsh and bash are supported")
+
+    elif arg != "setup":
         r = post_command(arg)
 
         if r.status_code >= 200 and r.status_code < 300:   

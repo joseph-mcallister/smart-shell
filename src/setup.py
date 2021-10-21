@@ -5,7 +5,7 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = fh.read()
 setup(
     name = 'smart-shell',
-    version = '0.0.2',
+    version = '0.0.3',
     author = 'Joe McAllister',
     author_email = 'joseph.l.mcallister+smart-shell@gmail.com',
     license = 'GNU GENERAL PUBLIC LICENSE',

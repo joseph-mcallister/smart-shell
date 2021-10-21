@@ -7,3 +7,4 @@ pyinstaller==4.5.1
 pyinstaller-hooks-contrib==2021.3
 requests==2.26.0
 urllib3==1.26.6
+psutil==5.8.0
